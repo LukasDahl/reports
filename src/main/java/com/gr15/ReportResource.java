@@ -1,22 +1,50 @@
 package com.gr15;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-@Path("/reports/{ID}")
+@Path("/reports")
 public class ReportResource {
 	Report instance = Report.reportinstance;
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<Integer, Transaction> getReport(@PathParam("ID") String ID) {
+    public Map<UUID, Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) throws ParseException {
 		
-        return instance.getTransactions(ID);
+		instance.removeAll();
+		
+		Date date1 = new Date();
+		instance.addTransaction(new Transaction("01", "10", "100", date1));
+		
+		Date date2 = new Date();
+		instance.addTransaction(new Transaction("02", "11", "100", date2));
+		
+		Date date3 = new Date();
+		instance.addTransaction(new Transaction("01", "11", "100", date3));
+		
+		Date date4 = new Date();
+		instance.addTransaction(new Transaction("02", "10", "100", date4));
+		
+		Date date5 = new Date();
+		instance.addTransaction(new Transaction("03", "10", "100", date5));
+		
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		Date dBegin = sdf.parse(start);
+	    Date dEnd = sdf.parse(end);
+	  
+	    
+        return instance.getTransactions(id, dBegin, dEnd);
     }
 
 }

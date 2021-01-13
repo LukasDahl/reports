@@ -1,13 +1,16 @@
 package com.gr15;
 
-import java.util.Map;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Report {
 	public static Report reportinstance = new Report();
 	
-	private Map<Integer, Transaction> transactions = new HashMap<Integer, Transaction>();
+	
+	private Map<UUID, Transaction> transactions = new HashMap<UUID, Transaction>();
 	
 	public boolean isCustomer(String customerID) {
 		if (customerID.substring(0, 1).equals("0")) {
@@ -31,35 +34,43 @@ public class Report {
 	}
 	
 	public void addTransaction(Transaction transaction) {
-		Integer transactionID = transactions.size() + 1;
-		transactions.put(transactionID, transaction);
+		transactions.put(UUID.randomUUID(), transaction);
 	}
 	
-	public Map<Integer, Transaction> getTransactions(String ID) {
+	public void removeAll() {
+		transactions.clear();
+	}
+	
+	public Map<UUID, Transaction> getTransactions(String id, Date start, Date end) {
 		
 		
-		if (isManager(ID)) {
+		if (isManager(id)) {
 			return transactions;
 		}
 		
-		if (isCustomer(ID)) {
-			Map<Integer, Transaction> result = 	transactions.entrySet()
+		if (isCustomer(id)) {
+			Map<UUID, Transaction> result = 	transactions.entrySet()
 					.stream()
-					.filter(map -> (map.getValue().getDebtor().equals(ID) ||  map.getValue().getCreditor().equals(ID)))
+					.filter(map -> (map.getValue().getDebtor().equals(id) ||  map.getValue().getCreditor().equals(id)))
+					.filter(map -> (map.getValue().getDate().after(start) &  map.getValue().getDate().before(end)))
 					.collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
 			return result;
 		}
 		
-		if (isMerchant(ID)) {
-			Map<Integer, Transaction> result = 	transactions.entrySet()
+		if (isMerchant(id)) {
+			Map<UUID, Transaction> result = 	transactions.entrySet()
 					.stream()
-					.filter(map -> (map.getValue().getDebtor().equals(ID) ||  map.getValue().getCreditor().equals(ID)))
+					.filter(map -> (map.getValue().getDebtor().equals(id) ||  map.getValue().getCreditor().equals(id)))
+					.filter(map -> (map.getValue().getDate().after(start) &  map.getValue().getDate().before(end)))
 					.collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
 			return result;
 		}
-		
 		
 		return null;
+	}
+	
+	public String check (String id, Date start, Date end) {
+		return id + " " + start.toString() + " " + end.toString();
 	}
 	
 

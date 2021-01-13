@@ -6,13 +6,13 @@ public class Transaction {
 	private String debtor;
 	private String creditor;
 	private String amount;
-	private String date;
+	private Date date;
 	
 	public Transaction() {
 		
 	}
 	
-	public Transaction(String debtor, String creditor, String amount, String date) {
+	public Transaction(String debtor, String creditor, String amount, Date date) {
 		this.debtor = debtor;
 		this.creditor = creditor;
 		this.amount = amount;
@@ -43,11 +43,11 @@ public class Transaction {
 		this.amount = amount;
 	}
 	
-	public String getDate() {
+	public Date getDate() {
 		return date;
 	}
 	
-	public void setDate(String date) {
+	public void setDate(Date date) {
 		this.date = date;
 	}
 
