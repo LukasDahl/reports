@@ -12,13 +12,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-@Path("/reports")
-public class ReportResource {
+@Path("/reports/customers")
+public class ReportCustomerResource {
 	Report instance = Report.reportinstance;
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<UUID, Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) throws ParseException, IllegalArgumentException {
+    public Map<UUID, Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) throws ParseException {
 		
 		instance.removeAll();
 		
@@ -46,7 +46,7 @@ public class ReportResource {
 	    Date dEnd = sdf.parse(end);
 	  
 	    
-        return instance.getTransactions(id, dBegin, dEnd);
+        return instance.getCustomerTransactions(id, dBegin, dEnd);
     }
 
 }
