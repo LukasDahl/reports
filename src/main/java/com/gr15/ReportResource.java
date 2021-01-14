@@ -2,7 +2,6 @@ package com.gr15;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -19,7 +18,7 @@ public class ReportResource {
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<UUID, Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) throws ParseException {
+    public Map<UUID, Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) throws ParseException, IllegalArgumentException {
 		
 		instance.removeAll();
 		
@@ -37,6 +36,9 @@ public class ReportResource {
 		
 		Date date5 = new Date();
 		instance.addTransaction(new Transaction("03", "10", "100", date5));
+		
+		Date date6 = new Date();
+		instance.addTransaction(new Transaction("10", "01", "100", date6));
 		
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");

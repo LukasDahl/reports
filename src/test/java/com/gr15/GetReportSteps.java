@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,8 +20,8 @@ import io.cucumber.java.en.When;
 public class GetReportSteps {
 	private String cid;
 	private Date startdate, enddate;
-	private Report report;
-	private Map<UUID, Transaction> result;
+	private Report report = new Report();
+	private Map<UUID, Transaction> result = new HashMap();
 	
 	@Given("a client with id {string}")
 	public void a_client_with_id(String cid) {
@@ -35,6 +36,8 @@ public class GetReportSteps {
 		
 		report.addTransaction(new Transaction(this.cid, "10", "100", date1));
 		report.addTransaction(new Transaction(this.cid, "20", "200", date1));
+		
+		System.out.println(report.getTransactions(this.cid, date1, date1));
 	}
 
 	@And("he asks to see his transactions between {string} and {string}")
@@ -46,6 +49,7 @@ public class GetReportSteps {
 	@When("we request the transaction report")
 	public void we_request_the_transaction_report() {
 	    result = report.getTransactions(cid, startdate, enddate);
+	    System.out.println(report.getTransactions(cid, startdate, enddate));
 	}
 
 	@Then("he receives a hashmap of {int} transactions")
