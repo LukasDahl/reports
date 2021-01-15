@@ -5,9 +5,9 @@ Feature: Getting reports
     And a merchant with id "10"
     And a manager with id "20"
     And an empty transaction database
-    And the customer has 2 transactions date "20210103" to id "11"
-    And the merchant has 2 transactions date "20210103" from id "02"
-    And they all ask to see their transactions between "20210102" and "20210104"
+    And the customer has 2 transactions date "2021-01-03" to id "11"
+    And the merchant has 2 transactions date "2021-01-03" from id "02"
+    And they all ask to see their transactions between "2021-01-02" and "2021-01-04"
     When they request the transaction report
     Then the customer receives a hashmap of 2 transactions
     And the merchant receives a hashmap of 2 transactions
@@ -17,7 +17,7 @@ Feature: Getting reports
   Scenario: Invalid dates
     Given a customer with id "01"
     And an empty transaction database
-    And the customer has 2 transactions date "20210103" to id "10"
-    And the customer asks to see his transactions between "20210101" and "20210102"
+    And the customer has 2 transactions date "2021-01-03" to id "10"
+    And the customer asks to see his transactions between "2021-01-01" and "2021-01-02"
     When the customer requests the transaction report
     Then the customer receives a hashmap of 0 transactions

@@ -3,12 +3,19 @@ package com.gr15;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import com.gr15.businesslogic.models.Report;
+import com.gr15.businesslogic.models.Transaction;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -17,12 +24,12 @@ import io.cucumber.java.en.When;
 
 public class GetReportSteps {
 	private String cid, mid, man;
-	private Date date;
-	private Date startdate, enddate;
+	private LocalDateTime date;
+	private LocalDateTime startdate, enddate;
 	private Report report = Report.testinstance;
-	private Map<UUID, Transaction> result_costumer = new HashMap<UUID, Transaction>();
-	private Map<UUID, Transaction> result_merchant = new HashMap<UUID, Transaction>();
-	private Map<UUID, Transaction> result_manager = new HashMap<UUID, Transaction>();
+	private Map<String, Transaction> result_costumer = new HashMap<String, Transaction>();
+	private Map<String, Transaction> result_merchant = new HashMap<String, Transaction>();
+	private Map<String, Transaction> result_manager = new HashMap<String, Transaction>();
 	
 	@Given("a customer with id {string}")
 	public void a_customer_with_id(String cid) {
@@ -48,28 +55,44 @@ public class GetReportSteps {
 	public void customer_has_transactions_date(Integer n_transactions, String date, String id) throws ParseException {
 		
 		
-		this.date = new SimpleDateFormat( "yyyyMMdd" ).parse(date);
 		
-		report.addTransaction(new Transaction(this.cid, id, "10", this.date));
-		report.addTransaction(new Transaction(this.cid, id, "20", this.date));
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate temp = LocalDate.parse(date, formatter);
+		this.date = temp.atStartOfDay();
+		
+		report.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+				BigDecimal.valueOf(100), id, "01", "description", this.date));
+		
+		report.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+				BigDecimal.valueOf(200), id, "01", "description", this.date));
 		
 	}
 	
 	@And("the merchant has {int} transactions date {string} from id {string}")
 	public void merchant_has_transactions_date(Integer n_transactions, String date, String id) throws ParseException {
 		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate temp = LocalDate.parse(date, formatter);
+		this.date = temp.atStartOfDay();
 		
-		this.date = new SimpleDateFormat( "yyyyMMdd" ).parse(date);
+		report.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+				BigDecimal.valueOf(10), this.mid, id, "description", this.date));
 		
-		report.addTransaction(new Transaction(id, this.mid, "40", this.date));
-		report.addTransaction(new Transaction(id, this.mid, "50", this.date));
+		report.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+				BigDecimal.valueOf(20), this.mid, id, "description", this.date));
 		
 	}
 	
 	@And("they all ask to see their transactions between {string} and {string}")
 	public void they_asks_to_see_his_transactions_between_and(String startdate, String enddate) throws ParseException {
-	    this.startdate = new SimpleDateFormat( "yyyyMMdd" ).parse(startdate);
-	    this.enddate = new SimpleDateFormat( "yyyyMMdd" ).parse(enddate);
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate tempstart = LocalDate.parse(startdate, formatter);
+		this.startdate = tempstart.atStartOfDay();
+		
+		LocalDate tempend = LocalDate.parse(enddate, formatter);
+		this.enddate = tempend.atStartOfDay();
+		
 	}
 	
 	@When("they request the transaction report")
@@ -100,19 +123,12 @@ public class GetReportSteps {
 		boolean clientDebtorAnonymous = true;
 		boolean clientCreditorAnonymous = true;
 		
-		for (UUID key: result_merchant.keySet()) {
-			if (result_merchant.get(key).getCreditor().equals(this.mid)) {
-				if (!result_merchant.get(key).getDebtor().equals("anonymous")) {
+		for (String key: result_merchant.keySet()) {
+			if (result_merchant.get(key).getMerchantId().equals(this.mid)) {
+				if (!result_merchant.get(key).getCustomerId().equals("anonymous")) {
 					clientDebtorAnonymous = false;
 				}
 			}
-			
-			if (result_merchant.get(key).getDebtor().equals(this.mid)) {
-				if (!result_merchant.get(key).getCreditor().equals("anonymous")) {
-					clientCreditorAnonymous = false;
-				}
-			}
-			
 		}
 		
 		assertTrue(clientDebtorAnonymous & clientCreditorAnonymous);
@@ -122,8 +138,13 @@ public class GetReportSteps {
 	
 	@Given("the customer asks to see his transactions between {string} and {string}")
 	public void customer_asks_to_see_his_transactions_between_and(String startdate, String enddate) throws ParseException {
-	    this.startdate = new SimpleDateFormat( "yyyyMMdd" ).parse(startdate);
-	    this.enddate = new SimpleDateFormat( "yyyyMMdd" ).parse(enddate);
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate tempstart = LocalDate.parse(startdate, formatter);
+		this.startdate = tempstart.atStartOfDay();
+		
+		LocalDate tempend = LocalDate.parse(enddate, formatter);
+		this.enddate = tempend.atStartOfDay();
 	}
 	
 	@When("the customer requests the transaction report")

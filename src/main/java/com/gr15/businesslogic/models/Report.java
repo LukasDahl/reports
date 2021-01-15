@@ -1,6 +1,7 @@
-package com.gr15;
+package com.gr15.businesslogic.models;
 
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,7 @@ public class Report {
 	public static Report testinstance = new Report();
 	
 	
-	private Map<UUID, Transaction> transactions = new HashMap<UUID, Transaction>();
+	private Map<String, Transaction> transactions = new HashMap<String, Transaction>();
 	
 	
 	public boolean isCustomer(String customerID) {
@@ -38,7 +39,7 @@ public class Report {
 	}
 	
 	public void addTransaction(Transaction transaction) {
-		transactions.put(UUID.randomUUID(), transaction);
+		transactions.put(transaction.getId(), transaction);
 	}
 	
 	public void removeAll() {
@@ -46,39 +47,43 @@ public class Report {
 	}
 	
 	
-	public Map<UUID, Transaction> getCustomerTransactions(String id, Date start, Date end) {
-		Map<UUID, Transaction> result = 	transactions.entrySet()
+	
+	
+	public Map<String, Transaction> getCustomerTransactions(String id, LocalDateTime start, LocalDateTime end) {
+		Map<String, Transaction> result = 	transactions.entrySet()
 				.stream()
-				.filter(map -> (map.getValue().getDebtor().equals(id) ||  map.getValue().getCreditor().equals(id)))
-				.filter(map -> (map.getValue().getDate().after(start) &  map.getValue().getDate().before(end)))
+				.filter(map -> (map.getValue().getCustomerId().equals(id)))
+				.filter(map -> (map.getValue().getTime().isAfter(start) &  map.getValue().getTime().isBefore(end)))
 				.collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
 		
 		return result;
 	}
 	
-	public Map<UUID, Transaction> getMerchantTransactions(String id, Date start, Date end) {
-		Map<UUID, Transaction> mid_creditor = transactions.entrySet()
+	public Map<String, Transaction> getMerchantTransactions(String id, LocalDateTime start, LocalDateTime end) {
+		Map<String, Transaction> result = transactions.entrySet()
 				.stream()
-				.filter(map -> (map.getValue().getCreditor().equals(id)))
-				.filter(map -> (map.getValue().getDate().after(start) &  map.getValue().getDate().before(end)))
+				.filter(map -> (map.getValue().getMerchantId().equals(id)))
+				.filter(map -> (map.getValue().getTime().isAfter(start) &  map.getValue().getTime().isBefore(end)))
 				.collect(Collectors.toMap(map -> map.getKey(), map ->
-				new Transaction("anonymous", map.getValue().getCreditor(), map.getValue().getAmount(), map.getValue().getDate())));
+				new Transaction(map.getValue().getId(),map.getValue().getToken() , map.getValue().getAmount(),
+						map.getValue().getMerchantId(), "anonymous", map.getValue().getDescription(),
+						map.getValue().getTime())));
 		
-		Map<UUID, Transaction> mid_debtor = transactions.entrySet()
-				.stream()
-				.filter(map -> (map.getValue().getDebtor().equals(id)))
-				.filter(map -> (map.getValue().getDate().after(start) &  map.getValue().getDate().before(end)))
-				.collect(Collectors.toMap(map -> map.getKey(), map ->
-				new Transaction(map.getValue().getDebtor(), "anonymous", map.getValue().getAmount(), map.getValue().getDate())));
+//		Map<String, Transaction> mid_debtor = transactions.entrySet()
+//				.stream()
+//				.filter(map -> (map.getValue().getDebtor().equals(id)))
+//				.filter(map -> (map.getValue().getDate().after(start) &  map.getValue().getDate().before(end)))
+//				.collect(Collectors.toMap(map -> map.getKey(), map ->
+//				new Transaction(map.getValue().getDebtor(), "anonymous", map.getValue().getAmount(), map.getValue().getDate())));
 		
-		Map<UUID, Transaction> result = new HashMap<UUID, Transaction>();
-		result.putAll(mid_debtor);
-		result.putAll(mid_creditor);
+//		Map<String, Transaction> result = new HashMap<UUID, Transaction>();
+//		result.putAll(mid_debtor);
+//		result.putAll(mid_creditor);
 		return result;
 		
 	}
 	
-	public Map<UUID, Transaction> getAllTransactions(String id, Date start, Date end) {
+	public Map<String, Transaction> getAllTransactions(String id, LocalDateTime dBegin, LocalDateTime dEnd) {
 		return transactions;
 	}
 	
