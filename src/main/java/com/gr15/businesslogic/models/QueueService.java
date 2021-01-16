@@ -19,6 +19,7 @@ public class QueueService implements IEventReceiver {
     private static final String EXCHANGE_NAME = "paymentsExchange";
     private static final String TRANSACTION_EVENT_BASE = "transaction.events.";
     private static final String TRANSACTION_CREATED_EVENT = "transactionCreated";
+    
 
     public QueueService() {
         RabbitMqListener r = new RabbitMqListener(this);
