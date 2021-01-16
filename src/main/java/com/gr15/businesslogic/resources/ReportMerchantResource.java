@@ -3,6 +3,7 @@ package com.gr15.businesslogic.resources;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -50,9 +51,11 @@ public class ReportMerchantResource {
 		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
 				BigDecimal.valueOf(100), "10", "01", "description", date6));
 		
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-		LocalDateTime dBegin = LocalDateTime.parse(start, formatter);
-		LocalDateTime dEnd = LocalDateTime.parse(end, formatter);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate starttemp = LocalDate.parse(start, formatter);
+		LocalDate endtemp = LocalDate.parse(end, formatter);
+		LocalDateTime dBegin = starttemp.atStartOfDay();
+		LocalDateTime dEnd = endtemp.atStartOfDay();
 	  
 	    
         return instance.getMerchantTransactions(id, dBegin, dEnd);

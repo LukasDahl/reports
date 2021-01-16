@@ -15,6 +15,7 @@ public class Report {
 	
 	
 	private Map<String, Transaction> transactions = new HashMap<String, Transaction>();
+	private final QueueService queueservice = new QueueService();
 	
 	
 	public boolean isCustomer(String customerID) {
@@ -45,9 +46,6 @@ public class Report {
 	public void removeAll() {
 		transactions.clear();
 	}
-	
-	
-	
 	
 	public Map<String, Transaction> getCustomerTransactions(String id, LocalDateTime start, LocalDateTime end) {
 		Map<String, Transaction> result = 	transactions.entrySet()
