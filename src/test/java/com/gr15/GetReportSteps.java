@@ -172,13 +172,12 @@ public class GetReportSteps implements IEventReceiver {
 	public void we_are_listening() {
 		
 		this.sizebefore = report.getDBSize();
-		System.out.println(report.getDBSize());
 		
 		try {
 			RabbitMqListener listener = new RabbitMqListener(this, "localhost");
 			listener.listen(EXCHANGE_NAME, QUEUE_TYPE, PAYMENT_EVENT_BASE + TRANSACTION_CREATED_EVENT);
 		} catch (Exception e) {
-			System.out.println("Something went wrong");
+			System.out.println("Something went wrong listening");
 			throw new Error(e);
 		}
 	}
@@ -198,6 +197,7 @@ public class GetReportSteps implements IEventReceiver {
 		try {
 			eventSender.sendEvent(event, EXCHANGE_NAME, QUEUE_TYPE, PAYMENT_EVENT_BASE + TRANSACTION_CREATED_EVENT);
 		} catch (Exception e) {
+			System.out.println("Something went wrong sending");
 			throw new Error(e);
 		}
 		
