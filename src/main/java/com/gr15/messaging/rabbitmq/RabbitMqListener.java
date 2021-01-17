@@ -15,16 +15,23 @@ import com.gr15.messaging.models.Event;
 public class RabbitMqListener {
 
     IEventReceiver eventReceiver;
+    String hostname;
 
-    public RabbitMqListener(IEventReceiver eventReceiver) {
+    public RabbitMqListener(IEventReceiver eventReceiver, String hostname) {
         this.eventReceiver = eventReceiver;
+        this.hostname = hostname;
     }
 
     public void listen(String exchangeName, String queueType, String topic) throws Exception {
 
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("rabbitMq");
-
+        factory.setHost(this.hostname);
+        if (hostname.equals("localhost")) {
+            factory.setPort(5672);
+            factory.setUsername("guest");
+            factory.setPassword("guest");
+        }
+        
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 

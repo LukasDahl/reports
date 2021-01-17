@@ -2,20 +2,21 @@ package com.gr15.businesslogic.models;
 
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.google.gson.Gson;
+import com.gr15.messaging.models.Event;
 
 
 public class Report {
-	public static Report reportinstance = new Report();
+	
 	public static Report testinstance = new Report();
+	public static Report report = new Report();
 	
 	
 	private Map<String, Transaction> transactions = new HashMap<String, Transaction>();
-	private final QueueService queueservice = new QueueService();
 	
 	
 	public boolean isCustomer(String customerID) {
@@ -45,6 +46,10 @@ public class Report {
 	
 	public void removeAll() {
 		transactions.clear();
+	}
+	
+	public int getDBSize() {
+		return transactions.size();
 	}
 	
 	public Map<String, Transaction> getCustomerTransactions(String id, LocalDateTime start, LocalDateTime end) {
@@ -81,8 +86,13 @@ public class Report {
 		
 	}
 	
-	public Map<String, Transaction> getAllTransactions(String id, LocalDateTime dBegin, LocalDateTime dEnd) {
-		return transactions;
+	public Map<String, Transaction> getAllTransactions(String id, LocalDateTime start, LocalDateTime end) {
+		Map<String, Transaction> result = 	transactions.entrySet()
+				.stream()
+				.filter(map -> (map.getValue().getTime().isAfter(start) &  map.getValue().getTime().isBefore(end)))
+				.collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
+		
+		return result;
 	}
 	
 	

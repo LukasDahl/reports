@@ -13,15 +13,22 @@ import com.gr15.messaging.models.Event;
 
 public class RabbitMqSender implements IEventSender {
 
-    // private static final String EXCHANGE_NAME = "eventsExchange";
-    // private static final String QUEUE_TYPE = "topic";
-    // private static final String TOPIC = "events";
+	String hostname;
+
+    public RabbitMqSender(String hostname) {
+        this.hostname = hostname;
+    }
 
     @Override
     public void sendEvent(Event event, String exchangeName, String queueType, String topic) throws Exception {
 
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("rabbitMq");
+    	ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(this.hostname);
+        if (hostname.equals("localhost")) {
+            factory.setPort(5672);
+            factory.setUsername("guest");
+            factory.setPassword("guest");
+        }
 
         try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
 

@@ -21,11 +21,13 @@ import com.gr15.businesslogic.models.Transaction;
 
 @Path("/reports/merchants")
 public class ReportMerchantResource {
-	Report instance = Report.reportinstance;
+	Report instance = Report.report;
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
     public Map<String, Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) throws ParseException {
+		
+		instance.removeAll();
 		
 		LocalDateTime date1 = LocalDateTime.now();
 		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",

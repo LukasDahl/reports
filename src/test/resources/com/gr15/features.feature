@@ -21,3 +21,10 @@ Feature: Getting reports
     And the customer asks to see his transactions between "2021-01-01" and "2021-01-02"
     When the customer requests the transaction report
     Then the customer receives a hashmap of 0 transactions
+    
+  Scenario: Receiving a message
+    Given we are listening
+    When a message from payments is received
+    Then a transaction is recorded
+    
+  

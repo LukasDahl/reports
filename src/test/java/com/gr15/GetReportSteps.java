@@ -3,33 +3,48 @@ package com.gr15;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.gson.Gson;
 import com.gr15.businesslogic.models.Report;
 import com.gr15.businesslogic.models.Transaction;
+import com.gr15.messaging.interfaces.IEventReceiver;
+import com.gr15.messaging.interfaces.IEventSender;
+import com.gr15.messaging.models.Event;
+import com.gr15.messaging.rabbitmq.RabbitMqListener;
+import com.gr15.messaging.rabbitmq.RabbitMqSender;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-public class GetReportSteps {
+public class GetReportSteps implements IEventReceiver {
 	private String cid, mid, man;
 	private LocalDateTime date;
 	private LocalDateTime startdate, enddate;
 	private Report report = Report.testinstance;
+	
 	private Map<String, Transaction> result_costumer = new HashMap<String, Transaction>();
 	private Map<String, Transaction> result_merchant = new HashMap<String, Transaction>();
 	private Map<String, Transaction> result_manager = new HashMap<String, Transaction>();
+	
+	IEventSender eventSender = new RabbitMqSender("localhost");
+	private int sizebefore;
+	
+	private static final String QUEUE_TYPE = "topic";
+	private static final String EXCHANGE_NAME = "paymentsExchange";
+	private static final String PAYMENT_EVENT_BASE = "payment.events.";
+	private static final String TRANSACTION_CREATED_EVENT = "transactionCreated";
+	
 	
 	@Given("a customer with id {string}")
 	public void a_customer_with_id(String cid) {
@@ -150,6 +165,64 @@ public class GetReportSteps {
 	@When("the customer requests the transaction report")
 	public void customer_request_the_transaction_report() {
 		result_costumer = report.getCustomerTransactions(cid, startdate, enddate);
+	}
+	
+	
+	@Given("we are listening")
+	public void we_are_listening() {
+		
+		this.sizebefore = report.getDBSize();
+		System.out.println(report.getDBSize());
+		
+		try {
+			RabbitMqListener listener = new RabbitMqListener(this, "localhost");
+			listener.listen(EXCHANGE_NAME, QUEUE_TYPE, PAYMENT_EVENT_BASE + TRANSACTION_CREATED_EVENT);
+		} catch (Exception e) {
+			System.out.println("Something went wrong");
+			throw new Error(e);
+		}
+	}
+	
+	@When("a message from payments is received")
+	public void a_message_from_payments_is_received() {
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate temp = LocalDate.parse("2021-01-17", formatter);
+		LocalDateTime testdate = temp.atStartOfDay();
+		
+		Transaction test = new Transaction(UUID.randomUUID().toString(),"token1",
+				BigDecimal.valueOf(100), "15", "05", "description", testdate);
+		
+		Event event = new Event(TRANSACTION_CREATED_EVENT, test);
+		
+		try {
+			eventSender.sendEvent(event, EXCHANGE_NAME, QUEUE_TYPE, PAYMENT_EVENT_BASE + TRANSACTION_CREATED_EVENT);
+		} catch (Exception e) {
+			throw new Error(e);
+		}
+		
+		
+	}
+	
+	@Then("a transaction is recorded")
+	public void a_transaction_is_recorded() {
+		
+		assertEquals(this.sizebefore + 1, report.getDBSize());
+	}
+	
+	
+	@Override
+	public void receiveEvent(Event event) throws Exception {
+		
+		System.out.println("Handling event: " + event);
+        
+        if (event.getEventType().equals(TRANSACTION_CREATED_EVENT)) {
+        	Transaction to_add = new Gson().fromJson(new Gson().toJson(event.getEventInfo()), Transaction.class);
+        	report.addTransaction(to_add);
+        } else {
+        	System.out.println("event ignored: " + event);
+        }
+		
 	}
 
 }
