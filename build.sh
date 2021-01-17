@@ -6,7 +6,7 @@ docker build -t reports .
 
 docker-compose up -d --build
 
-sleep 2s
+sleep 40s
 
 mvn test
 
