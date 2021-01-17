@@ -23,7 +23,8 @@ Feature: Getting reports
     Then the customer receives a hashmap of 0 transactions
     
   Scenario: Receiving a message
-    Given we are listening
+  	Given an empty transaction database
+    And we are listening
     When a message from payments is received
     Then a transaction is recorded
     
