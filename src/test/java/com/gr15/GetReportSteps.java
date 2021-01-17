@@ -206,7 +206,9 @@ public class GetReportSteps implements IEventReceiver {
 	
 	@Then("a transaction is recorded")
 	public void a_transaction_is_recorded() {
-		
+		while (report.getDBSize() == 0) {
+			System.out.print(".");
+		}
 		assertEquals(this.sizebefore + 1, report.getDBSize());
 	}
 	
@@ -219,6 +221,8 @@ public class GetReportSteps implements IEventReceiver {
         if (event.getEventType().equals(TRANSACTION_CREATED_EVENT)) {
         	Transaction to_add = new Gson().fromJson(new Gson().toJson(event.getEventInfo()), Transaction.class);
         	report.addTransaction(to_add);
+        	System.out.println();
+        	System.out.println("receiveEvent was successfully called");
         } else {
         	System.out.println("event ignored: " + event);
         }
