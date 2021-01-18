@@ -12,6 +12,9 @@ public class QueueService implements IEventReceiver {
     private static final String EXCHANGE_NAME = "paymentsExchange";
     private static final String PAYMENT_EVENT_BASE = "payment.events.";
     private static final String TRANSACTION_CREATED_EVENT = "transactionCreated";
+    
+    public static QueueService queue = new QueueService();
+   
 	
 	public QueueService () {
 		try {
