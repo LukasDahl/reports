@@ -9,7 +9,9 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,9 +35,9 @@ public class GetReportSteps implements IEventReceiver {
 	private LocalDateTime startdate, enddate;
 	private Report report = Report.testinstance;
 	
-	private Map<String, Transaction> result_costumer = new HashMap<String, Transaction>();
-	private Map<String, Transaction> result_merchant = new HashMap<String, Transaction>();
-	private Map<String, Transaction> result_manager = new HashMap<String, Transaction>();
+	private List<Transaction> result_costumer = new ArrayList<Transaction>();
+	private List<Transaction> result_merchant = new ArrayList<Transaction>();
+	private List<Transaction> result_manager = new ArrayList<Transaction>();
 	
 	IEventSender eventSender = new RabbitMqSender("localhost");
 	private int sizebefore;
@@ -135,18 +137,17 @@ public class GetReportSteps implements IEventReceiver {
 	@And("the client ids are anonymous to the merchant")
 	public void the_client_ids_are_anonymous() {
 		
-		boolean clientDebtorAnonymous = true;
-		boolean clientCreditorAnonymous = true;
+		boolean customerAnonymous = true;
 		
-		for (String key: result_merchant.keySet()) {
-			if (result_merchant.get(key).getMerchantId().equals(this.mid)) {
-				if (!result_merchant.get(key).getCustomerId().equals("anonymous")) {
-					clientDebtorAnonymous = false;
+		for (Transaction transaction: result_merchant) {
+			if (!transaction.getMerchantId().equals(this.mid)) {
+				if (!transaction.getCustomerId().equals("anonymous")) {
+					customerAnonymous = false;
 				}
 			}
 		}
 		
-		assertTrue(clientDebtorAnonymous & clientCreditorAnonymous);
+		assertTrue(customerAnonymous);
 		
 	}
 	

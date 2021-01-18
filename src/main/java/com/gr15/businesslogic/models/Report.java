@@ -2,12 +2,9 @@ package com.gr15.businesslogic.models;
 
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.google.gson.Gson;
-import com.gr15.messaging.models.Event;
 
 
 public class Report {
@@ -15,8 +12,7 @@ public class Report {
 	public static Report testinstance = new Report();
 	public static Report report = new Report();
 	
-	
-	private Map<String, Transaction> transactions = new HashMap<String, Transaction>();
+	private List<Transaction> transactions =new ArrayList<Transaction>();
 	
 	
 	public boolean isCustomer(String customerID) {
@@ -41,7 +37,7 @@ public class Report {
 	}
 	
 	public void addTransaction(Transaction transaction) {
-		transactions.put(transaction.getId(), transaction);
+		transactions.add(transaction);
 	}
 	
 	public void removeAll() {
@@ -52,45 +48,55 @@ public class Report {
 		return transactions.size();
 	}
 	
-	public Map<String, Transaction> getCustomerTransactions(String id, LocalDateTime start, LocalDateTime end) {
-		Map<String, Transaction> result = 	transactions.entrySet()
-				.stream()
-				.filter(map -> (map.getValue().getCustomerId().equals(id)))
-				.filter(map -> (map.getValue().getTime().isAfter(start) &  map.getValue().getTime().isBefore(end)))
-				.collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
+	public List<Transaction> getCustomerTransactions(String id, LocalDateTime start, LocalDateTime end) {
+		
+		List<Transaction> result =new ArrayList<Transaction>();
+		
+		for (Transaction transaction: transactions) {
+			if (transaction.getCustomerId().equals(id)) {
+				if (transaction.getTime().isAfter(start)) {
+					if (transaction.getTime().isBefore(end)) {
+						result.add(transaction);
+					}
+				}
+			}
+		}
 		
 		return result;
 	}
 	
-	public Map<String, Transaction> getMerchantTransactions(String id, LocalDateTime start, LocalDateTime end) {
-		Map<String, Transaction> result = transactions.entrySet()
-				.stream()
-				.filter(map -> (map.getValue().getMerchantId().equals(id)))
-				.filter(map -> (map.getValue().getTime().isAfter(start) &  map.getValue().getTime().isBefore(end)))
-				.collect(Collectors.toMap(map -> map.getKey(), map ->
-				new Transaction(map.getValue().getId(),map.getValue().getToken() , map.getValue().getAmount(),
-						map.getValue().getMerchantId(), "anonymous", map.getValue().getDescription(),
-						map.getValue().getTime())));
+	public List<Transaction> getMerchantTransactions(String id, LocalDateTime start, LocalDateTime end) {
 		
-//		Map<String, Transaction> mid_debtor = transactions.entrySet()
-//				.stream()
-//				.filter(map -> (map.getValue().getDebtor().equals(id)))
-//				.filter(map -> (map.getValue().getDate().after(start) &  map.getValue().getDate().before(end)))
-//				.collect(Collectors.toMap(map -> map.getKey(), map ->
-//				new Transaction(map.getValue().getDebtor(), "anonymous", map.getValue().getAmount(), map.getValue().getDate())));
+		List<Transaction> result =new ArrayList<Transaction>();
 		
-//		Map<String, Transaction> result = new HashMap<UUID, Transaction>();
-//		result.putAll(mid_debtor);
-//		result.putAll(mid_creditor);
+		for (Transaction transaction: transactions) {
+			if (transaction.getMerchantId().equals(id)) {
+				if (transaction.getTime().isAfter(start)) {
+					if (transaction.getTime().isBefore(end)) {
+						Transaction anonymized = new Transaction(transaction.getId(),
+								transaction.getToken(), transaction.getAmount(),
+								id, "anonymous", transaction.getDescription(), transaction.getTime());
+						result.add(anonymized);
+					}
+				}
+			}
+		}
+		
 		return result;
 		
 	}
 	
-	public Map<String, Transaction> getAllTransactions(String id, LocalDateTime start, LocalDateTime end) {
-		Map<String, Transaction> result = 	transactions.entrySet()
-				.stream()
-				.filter(map -> (map.getValue().getTime().isAfter(start) &  map.getValue().getTime().isBefore(end)))
-				.collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue()));
+	public List<Transaction> getAllTransactions(String id, LocalDateTime start, LocalDateTime end) {
+		
+		List<Transaction> result =new ArrayList<Transaction>();
+		
+		for (Transaction transaction: transactions) {
+			if (transaction.getTime().isAfter(start)) {
+				if (transaction.getTime().isBefore(end)) {
+					result.add(transaction);
+				}
+			}
+		}
 		
 		return result;
 	}

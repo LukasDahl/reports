@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,7 +24,7 @@ public class ReportCustomerResource {
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) {
+    public List<Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) {
 		
 //		instance.removeAll();
 //		

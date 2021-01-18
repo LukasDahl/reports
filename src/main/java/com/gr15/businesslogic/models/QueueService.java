@@ -13,9 +13,8 @@ public class QueueService implements IEventReceiver {
     private static final String PAYMENT_EVENT_BASE = "payment.events.";
     private static final String TRANSACTION_CREATED_EVENT = "transactionCreated";
     
-    public static QueueService queue = new QueueService();
-   
-	
+    
+    
 	public QueueService () {
 		try {
 			RabbitMqListener listener = new RabbitMqListener(this, "rabbitMq");
@@ -34,6 +33,7 @@ public class QueueService implements IEventReceiver {
         if (event.getEventType().equals(TRANSACTION_CREATED_EVENT)) {
         	Transaction to_add = new Gson().fromJson(new Gson().toJson(event.getEventInfo()), Transaction.class);
         	Report.report.addTransaction(to_add);
+        	System.out.println("Transaction added");
         } else {
         	System.out.println("event ignored: " + event);
         }

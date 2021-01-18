@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -25,34 +26,34 @@ public class ReportMerchantResource {
 	
 	@GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) throws ParseException {
+    public List<Transaction> getReport(@QueryParam("id") String id, @QueryParam("start") String start, @QueryParam("end") String end) throws ParseException {
 		
-		instance.removeAll();
-		
-		LocalDateTime date1 = LocalDateTime.now();
-		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
-				BigDecimal.valueOf(100), "10", "01", "description", date1));
-		
-		LocalDateTime date2 = LocalDateTime.now();
-		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
-				BigDecimal.valueOf(100), "10", "01", "description", date2));
-		
-		LocalDateTime date3 = LocalDateTime.now();
-		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
-				BigDecimal.valueOf(100), "10", "01", "description", date3));
-		
-		LocalDateTime date4 = LocalDateTime.now();
-		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
-				BigDecimal.valueOf(100), "10", "01", "description", date4));
-		
-		LocalDateTime date5 = LocalDateTime.now();
-		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
-				BigDecimal.valueOf(100), "10", "01", "description", date5));
-		
-		LocalDateTime date6 = LocalDateTime.now();
-		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
-				BigDecimal.valueOf(100), "10", "01", "description", date6));
-		
+//		instance.removeAll();
+//		
+//		LocalDateTime date1 = LocalDateTime.now();
+//		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+//				BigDecimal.valueOf(100), "10", "01", "description", date1));
+//		
+//		LocalDateTime date2 = LocalDateTime.now();
+//		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+//				BigDecimal.valueOf(100), "10", "01", "description", date2));
+//		
+//		LocalDateTime date3 = LocalDateTime.now();
+//		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+//				BigDecimal.valueOf(100), "10", "01", "description", date3));
+//		
+//		LocalDateTime date4 = LocalDateTime.now();
+//		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+//				BigDecimal.valueOf(100), "10", "01", "description", date4));
+//		
+//		LocalDateTime date5 = LocalDateTime.now();
+//		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+//				BigDecimal.valueOf(100), "10", "01", "description", date5));
+//		
+//		LocalDateTime date6 = LocalDateTime.now();
+//		instance.addTransaction(new Transaction(UUID.randomUUID().toString(),"token1",
+//				BigDecimal.valueOf(100), "10", "01", "description", date6));
+//		
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		LocalDate starttemp = LocalDate.parse(start, formatter);
 		LocalDate endtemp = LocalDate.parse(end, formatter);
