@@ -119,18 +119,18 @@ public class GetReportSteps implements IEventReceiver {
 	    result_manager = report.getAllTransactions(man, startdate, enddate);
 	}
 	
-	@Then("the customer receives a hashmap of {int} transactions")
-	public void customer_receives_a_hashmap_of_transactions(Integer n_transactions) {
+	@Then("the customer receives a list of {int} transactions")
+	public void customer_receives_a_list_of_transactions(Integer n_transactions) {
 	    assertEquals(n_transactions, result_costumer.size());
 	}
 	
-	@And("the merchant receives a hashmap of {int} transactions")
-	public void he_receives_a_hashmap_of_transactions(Integer n_transactions) {
+	@And("the merchant receives a list of {int} transactions")
+	public void he_receives_a_list_of_transactions(Integer n_transactions) {
 	    assertEquals(n_transactions, result_merchant.size());
 	}
 	
-	@And("the manager receives a hashmap of {int} transactions")
-	public void manager_receives_a_hashmap_of_transactions(Integer n_transactions) {
+	@And("the manager receives a list of {int} transactions")
+	public void manager_receives_a_list_of_transactions(Integer n_transactions) {
 	    assertEquals(n_transactions, result_manager.size());
 	}
 	
