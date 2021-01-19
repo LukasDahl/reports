@@ -8,20 +8,11 @@ import com.gr15.messaging.rabbitmq.RabbitMqListener;
 
 public class QueueService implements IEventReceiver {
 	
-	private static final String QUEUE_TYPE = "topic";
-    private static final String EXCHANGE_NAME = "paymentsExchange";
-    private static final String PAYMENT_EVENT_BASE = "payment.events.";
     private static final String TRANSACTION_CREATED_EVENT = "transactionCreated";
     
     
-    
 	public QueueService () {
-		try {
-			RabbitMqListener listener = new RabbitMqListener(this, "rabbitMq");
-			listener.listen(EXCHANGE_NAME, QUEUE_TYPE, PAYMENT_EVENT_BASE + TRANSACTION_CREATED_EVENT);
-		} catch (Exception e) {
-			throw new Error(e);
-		}
+		
 	}
 	
 	
